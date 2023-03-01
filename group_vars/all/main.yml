@@ -1,2 +1,3 @@
 ansible_user: confluent
+#ansible_ssh_pass: 
 #ansible_become: true

@@ -7,6 +7,10 @@
   roles:
   - kafka_brokers
 
-#- hosts: schema_registry
-#  roles:
-#  - schema_registry
+- hosts: kafka_connect
+  roles:
+  - kafka_connect
+
+- hosts: schema_registry
+  roles:
+  - schema_registry

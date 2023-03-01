@@ -1,17 +1,26 @@
+- name: Send the producer cert
+  copy:
+    src: /home/mtukus/dev/ansible/ansible-aswatson-kafka/ssl/ca-signed-producer1
+    dest: /home/confluent/ssl
+    force: false
+  when: inventory_hostname == 'uatgitbrkr11'
 - name: Send the signed certificates
   copy:
     src: /home/mtukus/dev/ansible/ansible-aswatson-kafka/ssl/ca-signed-broker1
     dest: /home/confluent/ssl
+    force: false
   when: inventory_hostname == 'uatgitbrkr11'
 - name: Send the signed certificates
   copy:
     src: /home/mtukus/dev/ansible/ansible-aswatson-kafka/ssl/ca-signed-broker2
     dest: /home/confluent/ssl
+    force: false
   when: inventory_hostname == 'uatgitbrkr12'
 - name: Send the signed certificates
   copy:
     src: /home/mtukus/dev/ansible/ansible-aswatson-kafka/ssl/ca-signed-broker3
     dest: /home/confluent/ssl
+    force: false
   when: inventory_hostname == 'uatgitbrkr13'
 
 

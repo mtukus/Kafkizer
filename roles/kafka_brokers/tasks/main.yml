@@ -10,8 +10,9 @@
   #- format-storage-dir.yml
   #- create-service.yml
   #- reload-service.yml
-  #- start-kafka-service.yml
   #- fetch-request-cert.yml
-  - send-signed-certs.yml
+  #- send-signed-certs.yml
+  #- stop-kafka-service.yml
+  #- start-kafka-service.yml
   - status-kafka-service.yml
   

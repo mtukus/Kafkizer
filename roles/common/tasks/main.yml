@@ -3,7 +3,8 @@
   include_tasks: "{{ item }}"
   loop:
   - ping-common.yml
-#  - check-java-install-common.yml
-#  - find-install-path-java.yml
-#  - install-confluent.yml 
-  - copy-pubkey-ca.yml
+  #- check-java-install-common.yml
+  #- find-install-path-java.yml
+  #- install-confluent.yml 
+  #- copy-pubkey-ca.yml
+  #- install-wireshark.yml

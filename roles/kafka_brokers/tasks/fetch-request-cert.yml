@@ -1,18 +1,26 @@
+#- name: Fetch the cert requests from the brokers
+#  fetch:
+#    src: /home/confluent/ssl/ca-request-broker1
+#    dest: /home/mtukus/dev/ansible/ansible-aswatson-kafka/ssl/
+#    flat: true
+#  when: inventory_hostname == 'uatgitbrkr11'
 - name: Fetch the cert requests from the brokers
   fetch:
-    src: /home/confluent/ssl/ca-request-broker1
+    src: /home/confluent/ssl/ca-request-producer1
     dest: /home/mtukus/dev/ansible/ansible-aswatson-kafka/ssl/
     flat: true
   when: inventory_hostname == 'uatgitbrkr11'
-- name: Fetch the cert requests from the brokers
-  fetch:
-    src: /home/confluent/ssl/ca-request-broker2
-    dest: /home/mtukus/dev/ansible/ansible-aswatson-kafka/ssl/ca-request-broker2
-    flat: true
-  when: inventory_hostname == 'uatgitbrkr12' 
-- name: Fetch the cert requests from the brokers
-  fetch:
-    src: /home/confluent/ssl/ca-request-broker3
-    dest: /home/mtukus/dev/ansible/ansible-aswatson-kafka/ssl/ca-request-broker3
-    flat: true
-  when: inventory_hostname == 'uatgitbrkr13' 
+#- name: Fetch the cert requests from the brokers
+#  fetch:
+#    src: /home/confluent/ssl/ca-request-broker2
+#    dest: /home/mtukus/dev/ansible/ansible-aswatson-kafka/ssl/ca-request-broker2
+#    flat: true
+#  when: inventory_hostname == 'uatgitbrkr12' 
+#- name: Fetch the cert requests from the brokers
+#  fetch:
+#    src: /home/confluent/ssl/ca-request-broker3
+#    dest: /home/mtukus/dev/ansible/ansible-aswatson-kafka/ssl/ca-request-broker3
+#    flat: true
+#  when: inventory_hostname == 'uatgitbrkr13' 
+#- name: Fetch the producer 1 request
+

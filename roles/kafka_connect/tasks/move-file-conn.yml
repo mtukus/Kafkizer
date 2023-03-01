@@ -1,0 +1,31 @@
+- name: Move the file connector file on the remote hosts to the connectorprops dir
+  copy:
+    remote_src: true
+    src: /home/confluent/confluent-7.3.1/etc/kafka/connect-file-source.properties
+    dest: /home/confluent/confluent-7.3.1/etc/kafka/connectorprops/
+
+- name: Move the file connector file on the remote hosts to the connectorprops dir
+  copy:
+    remote_src: true
+    src: /home/confluent/confluent-7.3.1/etc/kafka/connect-file-sink.properties
+    dest: /home/confluent/confluent-7.3.1/etc/kafka/connectorprops/
+
+- name: Remove source file
+  become: true
+  file:
+    path: /home/confluent/confluent-7.3.1/etc/kafka/connect-file-sink.properties
+    state: absent
+
+- name: Remove source file connector file
+  become: true
+  file:
+    path: /home/confluent/confluent-7.3.1/etc/kafka/connect-file-source.properties
+    state: absent
+
+- name: Remove source file connector file
+  become: true
+  file:
+    path: /home/confluent/confluent-7.3.1/etc/kafka/connect-file-sink.properties
+    state: absent
+ 
+    

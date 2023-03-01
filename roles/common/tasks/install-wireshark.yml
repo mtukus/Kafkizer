@@ -1,0 +1,13 @@
+- name: Install wireshark on the remote hosts
+  become: true
+  apt:
+    update_cache: yes 
+- name: Install tshark
+  become: true
+  apt:
+    name: tshark
+    state: present
+
+#- name: Install wireshark on the remote hosts
+#  become: true
+#  shell: sudo wiresharke

@@ -12,6 +12,7 @@
     update_cache: yes
   when: java_check != 0 
 - name: Output that Java is not installed and install it
+  become: true
   apt: 
     name: openjdk-17-jdk
     state: present

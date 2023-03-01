@@ -34,7 +34,6 @@
 
 - name: Print the env var for every machine
   command: echo $JAVA_HOME
-  become_user: confluent
   register: java_var
 
 

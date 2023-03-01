@@ -1,0 +1,8 @@
+- name: Copy the files to the machines
+  copy: 
+    src: jdbc-postgres.properties 
+    dest: /home/confluent/confluent-7.3.1/etc/kafka/connectorprops/jdbc-postgres.properties
+    force: true
+
+#- name: Check checksum of the files if they are equal
+

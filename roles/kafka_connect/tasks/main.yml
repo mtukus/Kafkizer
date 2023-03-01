@@ -1,2 +1,13 @@
----
-# tasks file for kafka_connect
+- name: Include all tasks of the role common
+  include_tasks: "{{ item }}"
+  loop:
+  #- create-dir-conn.yml
+  #- move-file-conn.yml
+  - insync-connector.yml
+  #- copy-connector.yml
+  #- create-service.yml
+  #- reload-service.yml
+  #- send-signed-certs.yml
+  #- stop-kafka-service.yml
+  #- start-kafka-service.yml
+  #- status-connect-service.yml
