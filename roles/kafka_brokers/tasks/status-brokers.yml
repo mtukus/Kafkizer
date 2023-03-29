@@ -1,8 +1,0 @@
-- name: Print status broker 1 
-  command:
-
-- name: Print status broker 2
-  command:
-
-- name: Print status broker 3
-  command:

@@ -1,0 +1,6 @@
+- name: Fetch the distributes properties file on the remote connect hosts to the control node
+  fetch:
+    src: /home/confluent/confluent-7.3.1/etc/kafka/connect-distributed.properties
+    dest: /home/mtukus/dev/ansible/ansible-aswatson-kafka/roles/kafka_connect/files 
+    validate_checksum: true
+    

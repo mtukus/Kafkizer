@@ -3,11 +3,14 @@
   loop:
   #- create-dir-conn.yml
   #- move-file-conn.yml
+  - fetch-properties.yml
   - insync-connector.yml
+  - copy-service.yml
+  #- sync-properties.yml
   #- copy-connector.yml
   #- create-service.yml
   #- reload-service.yml
   #- send-signed-certs.yml
-  #- stop-kafka-service.yml
-  #- start-kafka-service.yml
-  #- status-connect-service.yml
+  #- stop-connect-service.yml
+  #- start-connect-service.yml
+  - status-connect-service.yml

@@ -2,18 +2,10 @@
   shell: /home/confluent/confluent-7.3.1/bin/kafka-storage random-uuid
   register: cluster_id
   when: inventory_hostname == '20.86.65.24'
+
 - name:
   debug:
     msg: "This is the cluster id {{ cluster_id }}"
 # output clusterID: BfnTX9wnQgitegI8yjLSwg  
 
-- name: Format storage dir for uatgitbrkr11
-  shell: /home/confluent/confluent-7.3.1/bin/kafka-storage.sh format -t <uuid> -c ~/kafka_2.13-3.0.0/config/kraft/server1.properties
-  when: inventory_hostname == '20.86.65.24'
 
-- name: Format storage dir for uatgitbrkr11
-  shell: /home/confluent/confluent-7.3.1/bin/kafka-storage.sh format -t <uuid> -c ~/kafka_2>  when: inventory_hostname == '20.86.65.24'
-
-
-- name: Format storage dir for uatgitbrkr11
-  shell: /home/confluent/confluent-7.3.1/bin/kafka-storage.sh format -t <uuid> -c ~/kafka_2>  when: inventory_hostname == '20.86.65.24'

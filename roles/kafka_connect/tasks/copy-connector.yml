@@ -1,11 +1,11 @@
 - name: Copy connector jar from control node to remote
   copy:
-    src: /home/mtukus/dev/ansible/ansible-aswatson-kafka/jarfiles/confluentinc-kafka-connect-jdbc-10.6.3.zip
+    src: /home/mtukus/dev/ansible/ansible-aswatson-kafka/jarfiles/confluentinc-kafka-connect-datagen-0.6.0
     dest: /home/confluent/confluent-7.3.1/share/test/
     force: false
   
-- name: Unzip a file
-  become: true
-  shell: unzip confluentinc-kafka-connect-jdbc-10.6.3.zip
+#- name: Unzip a file
+#  become: true
+#  shell: unzip confluentinc-kafka-connect-jdbc-10.6.3.zip
 
   

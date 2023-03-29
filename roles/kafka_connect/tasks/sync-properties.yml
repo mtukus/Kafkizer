@@ -1,0 +1,10 @@
+- name: Synchronize the properties on the control node with the properties file on the uatgitkcon11
+  synchronize:
+    src: /home/mtukus/dev/ansible/ansible-aswatson-kafka/roles/kafka_connect/files/uatgitkcon11/home/confluent/confluent-7.3.1/etc/kafka/connect-distributed.properties 
+    dest: /home/confluent/confluent-7.3.1/etc/kafka/connect-distributed.properties
+
+- name: Synchronize the properties on the control node with the properties file on the uatgitkcon12
+  synchronize:
+    src: /home/mtukus/dev/ansible/ansible-aswatson-kafka/roles/kafka_connect/files/uatgitkcon12/home/confluent/confluent-7.3.1/etc/kafka/connect-distributed.properties    
+    dest: /home/confluent/confluent-7.3.1/etc/kafka/connect-distributed.properties
+

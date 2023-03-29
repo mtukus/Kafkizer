@@ -4,5 +4,17 @@
     dest: /home/confluent/confluent-7.3.1/etc/kafka/connectorprops/jdbc-postgres.properties
     force: true
 
+- name: Copy the files to the machines
+  copy:
+    src: cdc-postgres.properties
+    dest: /home/confluent/confluent-7.3.1/etc/kafka/connectorprops/cdc-postgres.properties
+    force: true
+
+- name: Copy the files to the machines
+  copy:
+    src: datagen-users.config
+    dest: /home/confluent/confluent-7.3.1/etc/kafka/connectorprops/datagen-users.config
+    force: true
+
 #- name: Check checksum of the files if they are equal
 

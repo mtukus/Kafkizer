@@ -1,0 +1,3 @@
+- name: Stop connect services on remote hosts
+  become: yes
+  shell: systemctl stop connect.service

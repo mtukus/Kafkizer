@@ -1,0 +1,7 @@
+- name: Reload systemd configuration
+  become: yes
+  shell: systemctl daemon-reload
+
+- name: Enable connect.service
+  become: yes
+  shell: systemctl enable connect.service

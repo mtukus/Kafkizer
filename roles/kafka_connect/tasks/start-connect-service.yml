@@ -1,0 +1,3 @@
+- name: Start the connect services on the remote hosts
+  become: yes
+  shell: systemctl start connect.service

@@ -1,0 +1,8 @@
+#- name: Check if rsync is installed on remote hosts
+#  
+#
+#- name: If rsync is not installed, then install it on the specific machine
+#- name: Check for rsync
+#  debug:
+#    msg: "rsync is {{ 'installed' if 'rsync' in ansible_facts.packages.keys() else 'not installed' }} on {{ inventory_hostname }}"
+

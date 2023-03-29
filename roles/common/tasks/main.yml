@@ -8,3 +8,4 @@
   #- install-confluent.yml 
   #- copy-pubkey-ca.yml
   #- install-wireshark.yml
+  #- install-rsync.yml

@@ -1,0 +1,5 @@
+- name: A task to copy the Kafka Connect service file
+  become: yes
+  copy:
+    src: connect.service
+    dest: /etc/systemd/system/connect.service
