@@ -5,7 +5,7 @@
   #- move-file-conn.yml
   - fetch-properties.yml
   - insync-connector.yml
-  - copy-service.yml
+  #- copy-service.yml
   #- sync-properties.yml
   #- copy-connector.yml
   #- create-service.yml
