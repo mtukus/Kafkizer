@@ -13,7 +13,7 @@
   #- fetch-request-cert.yml
   #- send-signed-certs.yml
   #- get-topics.yml
-  - stop-kafka-service.yml
-  - start-kafka-service.yml
+  #- stop-kafka-service.yml
+  #- start-kafka-service.yml
   - status-kafka-service.yml
   

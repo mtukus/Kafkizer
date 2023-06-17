@@ -1,0 +1,71 @@
+version: '3.3'
+services:
+  # To Backup
+  to-backup-zk:
+    build:
+      context: ./utils
+      dockerfile: Dockerfile
+    container_name: to-backup-zk
+    hostname: to-backup-zk
+    ports:
+      - 12181:2181
+    volumes:
+      - "./utils/kafka-configs/zookeeper.properties:/etc/zookeeper.properties"
+    command: "zookeeper-server-start.sh /etc/zookeeper.properties"
+    networks:
+      - to-backup
+
+  to-backup-kafka:
+    build:
+      context: ./utils
+      dockerfile: Dockerfile
+    container_name: to-backup-kafka
+    hostname: to-backup-kafka
+    volumes:
+      - "./utils/kafka-configs/to-backup-kafka.properties:/etc/kafka.properties"
+      - "./utils/utils.py:/usr/bin/utils.py"
+    ports:
+      - 19092:19092
+    networks:
+      - to-backup
+    depends_on:
+      - to-backup-zk
+    command: "kafka-server-start.sh /etc/kafka.properties"
+
+  ################################################################################################
+  # Restore to
+
+  restore-to-zk:
+    build:
+      context: ./utils
+      dockerfile: Dockerfile
+    container_name: restore-to-zk-1
+    hostname: restore-to-zk-1
+    ports:
+      - 22181:2181
+    volumes:
+      - "./utils/kafka-configs/zookeeper.properties:/etc/zookeeper.properties"
+    command: "zookeeper-server-start.sh /etc/zookeeper.properties"
+    networks:
+      - restore-to
+
+  restore-to-kafka:
+    build:
+      context: ./utils
+      dockerfile: Dockerfile
+    container_name: restore-to-kafka
+    hostname: restore-to-kafka
+    volumes:
+      - "./utils/kafka-configs/restore-to-kafka.properties:/etc/kafka.properties"
+      - "./utils/utils.py:/usr/bin/utils.py"
+    ports:
+      - 29092:29092
+    networks:
+      - restore-to
+    depends_on:
+      - restore-to-zk
+    command: "kafka-server-start.sh /etc/kafka.properties"
+
+networks:
+  to-backup:
+  restore-to:

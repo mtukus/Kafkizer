@@ -1,0 +1,13 @@
+- name: The playbooks that need to be run for the mirror maker cluster
+  include_tasks: "{{ item }}"
+  loop:
+  #- create-cluster-id.yml
+  #- change-log-dirs.yml
+  #- format-storage-dir.yml
+  #- create-service.yml
+  #- reload-service.yml
+  #- stop-kafka-service.yml
+  #- start-kafka-service.yml
+  - status-kafka-service.yml
+  
+

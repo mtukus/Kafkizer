@@ -1,0 +1,8 @@
+- name: A task that gets the status of the broker on the control node
+  become: yes
+  shell: systemctl status kafka.service
+  register: kafka_status
+
+- name: Print the kafka_status
+  debug:
+    var: kafka_status.stdout

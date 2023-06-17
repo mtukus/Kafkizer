@@ -1,0 +1,159 @@
+# Test description
+#
+# Create two topics:
+# * backup-test-1partition: 1 partition
+# * backup-test-empty-topic: 3 partitions
+#
+# * Fill the 1partition topic with 300 messages á 10KB each in every partition
+# * Consume the messages with three consumer groups: cg-100: consume 100 messages, cg-200 consume 200 messages, cg-300 consume 300 messages
+# * Fill one of the 3 partitions of empty-topic with 300 messages. Leave the other partitions empty
+#
+# * Take a backup
+# * Stop the Cluster
+#
+# * Start the backup
+# * Verify that all messages have been written correctly
+# * Check the consumer offsets
+#
+# * Stop everything
+- name: coyote
+  title: kafka-backup
+
+- name: Setup Cluster to Backup
+  entries:
+    - name: Docker Compose Up
+      command: docker-compose up -d
+    - name: Clean previous data
+      command: docker run -v /tmp/kafka-backup/:/kafka-backup/ kafka-backup-dev:latest rm -rf "/kafka-backup/001_simple_1partition_test/"
+    - name: Wait for Kafka to get up
+      command: docker logs to-backup-kafka 2>&1 | grep -q '\[KafkaServer id=1\] started'
+      timeout: 30s
+
+- name: Create  Topic for tests
+  entries:
+    - command: docker-compose exec -T to-backup-kafka bash -c '
+        utils.py create_topic --topic backup-test-1partition --partitions 1 &&
+        utils.py create_topic --topic backup-test-weird-msgs --partitions 1 &&
+        utils.py create_topic --topic backup-test-empty-topic --partitions 3'
+- name: Produce Messages
+  entries:
+    - name: Produce 300 messages
+      command: docker-compose exec -T to-backup-kafka bash -c '
+        utils.py produce_messages --topic backup-test-1partition --partition 0 --start_num 0 --count 300 &&
+        utils.py produce_messages --topic backup-test-empty-topic --partition 0 --start_num 0 --count 300'
+    - name: Produce 'weird' messages
+      command: docker-compose exec -T to-backup-kafka bash -c '
+        utils.py produce_weird_messages --partition 0 --topic backup-test-weird-msgs'
+- name: Consume messages
+  entries:
+    - name: Consume 100 messages with cg-100
+      command: docker-compose exec -T to-backup-kafka
+        utils.py consume_messages --topic backup-test-1partition --consumer_group cg-100 --count 100
+    - name: Consume 200 messages with cg-200
+      command: docker-compose exec -T to-backup-kafka
+        utils.py consume_messages --topic backup-test-1partition --consumer_group cg-200 --count 200
+    - name: Consume 300 messages with cg-300
+      command: docker-compose exec -T to-backup-kafka
+        utils.py consume_messages --topic backup-test-1partition --consumer_group cg-300 --count 300
+- name: Check Consumer Group Offsets
+  entries:
+    - name: Count Messages
+      command: docker-compose exec -T to-backup-kafka
+        utils.py count_messages
+      stdout_has:
+        - "backup-test-1partition 0: 300"
+        - "backup-test-empty-topic 0: 300"
+        - "backup-test-empty-topic 1: 0"
+        - "backup-test-empty-topic 2: 0"
+    - name: Check Consumer Group cg-100
+      command: docker-compose exec -T to-backup-kafka
+        kafka-consumer-groups.sh --bootstrap-server localhost:9092 --describe --group cg-100
+      stdout_has: [ 'backup-test-1partition 0          100             300             200' ]
+    - name: Check Consumer Group cg-200
+      command: docker-compose exec -T to-backup-kafka
+        kafka-consumer-groups.sh --bootstrap-server localhost:9092 --describe --group cg-200
+      stdout_has: [ 'backup-test-1partition 0          200             300             100' ]
+    - name: Check Consumer Group cg-200
+      command: docker-compose exec -T to-backup-kafka
+        kafka-consumer-groups.sh --bootstrap-server localhost:9092 --describe --group cg-300
+      stdout_has: [ 'backup-test-1partition 0          300             300             0' ]
+
+- name: Start Kafka Backup
+  entries:
+    - name: Start Kafka Backup
+      command: >
+        docker run -d -v /tmp/kafka-backup/:/kafka-backup/ --net=system_test_to-backup -p 18083:8083 --name to-backup --rm
+        kafka-backup-dev:latest backup-standalone.sh --bootstrap-server to-backup-kafka:9092
+        --target-dir /kafka-backup/001_simple_1partition_test/ --topics-regex 'backup-test.*'
+    - command: sleep 30
+      nolog: true
+    - name: Check For errors
+      timeout: 300s
+      command: docker exec to-backup curl -vs "http://localhost:8083/connectors/backup-sink/status"
+      stderr_has: ["200 OK"]
+      stdout_has: ["RUNNING"]
+      stdout_not_has: ["FAILED"]
+
+- name: Stop Cluster that was backed up
+  entries:
+    - name: Stop Kafka Backup
+      command: docker kill to-backup
+    - name: Docker Compose Down
+      command: docker-compose stop to-backup-kafka
+
+- name: Restore
+  entries:
+    - name: Create Topic
+      command: docker-compose exec -T restore-to-kafka bash -c '
+        utils.py create_topic --topic backup-test-1partition --partitions 1 &&
+        utils.py create_topic --topic backup-test-weird-msgs --partitions 1 &&
+        utils.py create_topic --topic backup-test-empty-topic --partitions 3'
+    - name: Run Kafka Restore
+      command: >
+        docker run -v /tmp/kafka-backup/:/kafka-backup/ --net=system_test_restore-to --name restore-to --rm
+        kafka-backup-dev:latest restore-standalone.sh --bootstrap-server restore-to-kafka:9092
+        --source-dir /kafka-backup/001_simple_1partition_test/ --topics 'backup-test-1partition,backup-test-empty-topic,backup-test-weird-msgs'
+      timeout: 60s
+      stdout_has: ['All records read.']
+
+- name: Verify Backup
+  entries:
+    - name: Verify Records
+      timeout: 30s
+      command: docker-compose exec -T restore-to-kafka bash -c '
+        utils.py consume_verify_messages --topic backup-test-1partition --partition 0 --count 300 &&
+        utils.py consume_verify_messages --topic backup-test-empty-topic --partition 0 --count 300'
+    - name: Verify Weird Records
+      timeout: 15s
+      command: docker-compose exec -T restore-to-kafka bash -c '
+        utils.py consume_verify_weird_messages --partition 0 --topic backup-test-weird-msgs'
+    - name: Count Messages
+      timeout: 30s
+      command: docker-compose exec -T restore-to-kafka
+        utils.py count_messages
+      stdout_has:
+        - "backup-test-1partition 0: 300"
+        - "backup-test-empty-topic 0: 300"
+        - "backup-test-empty-topic 1: 0"
+        - "backup-test-empty-topic 2: 0"
+    - name: Check Consumer Group cg-100
+      timeout: 30s
+      command: docker-compose exec -T restore-to-kafka
+        kafka-consumer-groups.sh --bootstrap-server localhost:9092 --describe --group cg-100
+      stdout_has: [ 'backup-test-1partition 0          100' ]
+    - name: Check Consumer Group cg-200
+      timeout: 30s
+      command: docker-compose exec -T restore-to-kafka
+        kafka-consumer-groups.sh --bootstrap-server localhost:9092 --describe --group cg-200
+      stdout_has: [ 'backup-test-1partition 0          200' ]
+    - name: Check Consumer Group cg-200
+      timeout: 30s
+      command: docker-compose exec -T restore-to-kafka
+        kafka-consumer-groups.sh --bootstrap-server localhost:9092 --describe --group cg-300
+      stdout_has: [ 'backup-test-1partition 0          300' ]
+
+- name: Clean-up Containers
+  entries:
+    - name: Docker Compose Down
+      command: docker-compose down
+      timeout: 15s

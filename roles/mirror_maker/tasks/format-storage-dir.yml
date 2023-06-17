@@ -1,0 +1,5 @@
+# output clusterID: <_ZedUE8MToShZFovc86jTA>
+
+- name: Format storage dir for uatgitmirr11
+  shell: /home/confluent/confluent-7.3.1/bin/kafka-storage format -t _ZedUE8MToShZFovc86jTA -c /home/confluent/confluent-7.3.1/etc/kafka/kraft/server.properties
+  when: inventory_hostname == 'uatgitmirr11'

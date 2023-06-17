@@ -1,0 +1,98 @@
+# * Create a backup with multiple segments
+# * Delete some old segments
+# * Delete all indexes
+# * Recreate all indexes
+# * Do a restore
+- name: coyote
+  title: kafka-backup
+
+- name: Setup Cluster to Backup
+  entries:
+    - name: Docker Compose Up
+      command: docker-compose up -d
+    - name: Clean previous data
+      command: docker run -v /tmp/kafka-backup/:/kafka-backup/ kafka-backup-dev:latest rm -rf "/kafka-backup/04_delete_old_segment/"
+    - name: Wait for Kafka to get up
+      command: docker logs to-backup-kafka 2>&1 | grep -q '\[KafkaServer id=1\] started'
+      timeout: 30s
+
+- name: Create  Topic for tests
+  entries:
+    - command: docker-compose exec -T to-backup-kafka
+        utils.py create_topic --topic backup-test-1partition --partitions 1
+- name: Produce Messages
+  entries:
+    - name: Produce 3000 messages
+      command: docker-compose exec -T to-backup-kafka
+        utils.py produce_messages --topic backup-test-1partition --partition 0 --start_num 0 --count 3000
+    - name: Count Messages
+      command: docker-compose exec -T to-backup-kafka
+        utils.py count_messages
+      stdout_has:
+        - "backup-test-1partition 0: 3000"
+
+- name: Start Kafka Backup
+  entries:
+    - name: Start Kafka Backup
+      command: >
+        docker run -d -v /tmp/kafka-backup/:/kafka-backup/ --net=system_test_to-backup --name to-backup --rm
+        kafka-backup-dev:latest backup-standalone.sh --bootstrap-server to-backup-kafka:9092
+        --target-dir /kafka-backup/04_delete_old_segment/ --topics-regex 'backup-test.*' --max-segment-size 10485760
+    - command: sleep 30
+      nolog: true
+
+- name: Stop Cluster that was backed up
+  entries:
+    - name: Stop Kafka Backup
+      command: docker kill to-backup
+    - name: Docker Compose Down
+      command: docker-compose stop to-backup-kafka
+
+- name: Delete old segment and restore the index
+  entries:
+    - name: Delete all indexes
+      command: docker run -v /tmp/kafka-backup/:/kafka-backup/ kafka-backup-dev:latest bash -c  \
+        'rm /kafka-backup/04_delete_old_segment/backup-test-1partition/*index*'
+    - name: Delete old segment
+      command: docker run -v /tmp/kafka-backup/:/kafka-backup/ kafka-backup-dev:latest bash -c  \
+        'rm /kafka-backup/04_delete_old_segment/backup-test-1partition/segment_partition_000_from_offset_0000000000_records'
+    - name: Restore segment and partition indexes
+      command: >
+        docker run -v /tmp/kafka-backup/:/kafka-backup/ kafka-backup-dev:latest bash -c  '
+        export TOPICDIR="/kafka-backup/04_delete_old_segment/backup-test-1partition/" &&
+        export CLASSPATH="/connect-plugins/kafka-backup.jar" &&
+        for f in "$TOPICDIR"/segment_partition_*_records ; do
+          segment-index.sh --restore-index \
+          --segment $f
+        done &&
+        partition-index.sh --restore --partition 0 --topic-dir "$TOPICDIR"'
+
+- name: Restore
+  entries:
+    - name: Create Topic
+      command: docker-compose exec -T restore-to-kafka
+        utils.py create_topic --topic backup-test-1partition --partitions 1
+    - name: Run Kafka Restore
+      command: >
+        docker run -v /tmp/kafka-backup/:/kafka-backup/ --net=system_test_restore-to --name restore-to --rm
+        kafka-backup-dev:latest restore-standalone.sh --bootstrap-server restore-to-kafka:9092
+        --source-dir /kafka-backup/04_delete_old_segment/
+        --topics 'backup-test-1partition'
+      timeout: 60s
+      stdout_has: ['All records read.']
+
+- name: Verify Backup
+  entries:
+    - name: Count Messages
+      command: docker-compose exec -T restore-to-kafka
+        utils.py count_messages
+      stdout_has:
+        - "backup-test-1partition 0: 1959"
+    - name: Verify Records
+      command: docker-compose exec -T restore-to-kafka
+        utils.py consume_verify_messages --topic backup-test-1partition --partition 0 --start_num 1041 --count 1959
+
+- name: Clean-up Containers
+  entries:
+    - name: Docker Compose Down
+      command: docker-compose down

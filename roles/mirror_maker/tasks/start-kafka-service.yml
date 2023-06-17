@@ -1,0 +1,4 @@
+- name: Start Kafka service
+  become: yes
+  shell: systemctl start kafka.service
+  

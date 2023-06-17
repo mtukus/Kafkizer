@@ -1,0 +1,8 @@
+build/
+local-*
+.idea
+*.iml
+.gradle
+*\#*
+*~
+bin/*.jar

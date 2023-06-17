@@ -1,0 +1,7 @@
+---
+- name: Create Kafka service file
+  become: yes
+  copy:
+    src: kafka.service
+    dest: /etc/systemd/system/kafka.service
+   

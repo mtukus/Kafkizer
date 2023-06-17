@@ -1,0 +1,10 @@
+"name":"backup-sink-connector",
+"connector.class":"de.azapps.kafkabackup.sink.BackupSinkConnector",
+"tasks.max":"1",
+"topics":"testAutorizer",
+"key.converter":"org.apache.kafka.connect.converters.ByteArrayConverter",
+"value.converter":"org.apache.kafka.connect.converters.ByteArrayConverter",
+"header.converter":"org.apache.kafka.connect.converters.ByteArrayConverter",
+"target.dir":"/home/confluent/confluent-7.3.1/backup",
+"max.segment.size.bytes":"1073741824",
+"cluster.bootstrap.servers":"uatgitbrkr11.internalaswatson.com:9092, uatgitbrkr12.internalaswatson.com:9092, uatgitbrkr13.internalaswatson.com:9092"
