@@ -1,28 +1,30 @@
-#- name: Copy connector jar from control node to remote
-#  copy:
-#    src: /home/mtukus/dev/ansible/ansible-aswatson-kafka/jarfiles/confluentinc-kafka-connect-datagen-0.6.0
-#    dest: /home/confluent/confluent-7.3.1/share/test/
-#    force: false
+- name: Copy connector jar from control node to remote
+  copy:
+    src: /home/mtukus/Kafkizer/jarfiles/confluentinc-kafka-connect-datagen-0.6.0
+    dest: /home/confluent/confluent-7.3.1/share/test/
+    force: false
 
-#- name: Unzip a file
-#  become: true
-#  shell: unzip confluentinc-kafka-connect-jdbc-10.6.3.zip
-
-#- name: Copy kafka-backup connector
-#  copy:
-#    src: /home/mtukus/Kafkizer/jarfiles/kafka-backup-0.1
-#    dest: /home/confluent/confluent-7.3.1/share/test/
-#    force: false
+- name: Copy kafka-backup connector
+  copy:
+    src: /home/mtukus/Kafkizer/jarfiles/kafka-backup-0.1
+    dest: /home/confluent/confluent-7.3.1/share/test/
+    force: false
   
-
-#- name: Copy the right kafka-backup connector to the remote connect hosts
-#  copy:
-#    src: /home/mtukus/Kafkizer/jarfiles/kafka-backup-master/build/libs/kafka-backup.jar
-#    dest: /home/confluent/confluent-7.3.1/share/test/
-#    force: false
+- name: Copy the kafka-backup connector to the remote connect hosts
+  copy:
+    src: /home/mtukus/Kafkizer/jarfiles/kafka-backup-master/build/libs/kafka-backup.jar
+    dest: /home/confluent/confluent-7.3.1/share/test/
+    force: false
 
 - name: Copy the MongoDB connector to the remote connect hosts
   copy:
     src: /home/mtukus/Kafkizer/jarfiles/mongodb-kafka-connect-mongodb-1.10.1
     dest: /home/confluent/confluent-7.3.1/share/test/
     force: false
+
+- name: Copy the S3 (Minio) Sink Connector to the remote connect hosts
+  copy:
+    src: /home/mtukus/Kafkizer/jarfiles/confluentinc-kafka-connect-s3-10.5.1.zip
+    dest: /home/confluent/confluent-7.3.1/share/test/
+    force: false
+

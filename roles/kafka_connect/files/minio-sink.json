@@ -1,0 +1,16 @@
+{
+  "name": "minio-sink-connector",
+  "config": {
+    "topics": "minio-kafka",
+    "connector.class": "io.confluent.connect.s3.S3SinkConnector",
+    "tasks.max": "1",
+    "flush.size": "1",
+    "s3.bucket.name": "minio-kafka",
+    "s3.endpoint": "http://20.67.50.221:9000",
+    "format.class": "io.confluent.connect.s3.format.bytearray.ByteArrayFormat",
+    "storage.class": "io.confluent.connect.s3.storage.S3Storage",
+    "aws.access.key.id": "mert",
+    "aws.secret.access.key": "kafkatest"
+  }
+}
+

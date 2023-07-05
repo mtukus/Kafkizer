@@ -7,7 +7,7 @@
   - insync-connector.yml
   #- copy-service.yml
   #- sync-properties.yml
-  - copy-connector.yml
+  #- copy-connector.yml
   #- create-service.yml
   #- reload-service.yml
   #- send-signed-certs.yml
